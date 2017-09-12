@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <title>New Tab&nbsp;&nbsp;&#x1F4C4;</title>
+    <link href="style.css" media="all" rel="stylesheet" />
+    <link href="custom.css" media="all" rel="stylesheet" />
+    <link rel="icon" type="image/png" id="favicon-rel" />
+    <script type="text/javascript" src="script.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <a href="" class="box" accesskey="">
+        <div>
+          <img width="80%" src="img/" />
+          <span>Caption</span>
+        </div>
+      </a>
+      <a href="" class="box" accesskey="">
+        <img width="100%" src="img/" />
+      </a>
+      <a href="" class="box">
+        <div>
+          <img width="30%" src="img/" style="margin: 0;" />
+          <span>Inline</span>
+        </div>
+      </a>
+      <!--
+          ...
+        -->
+    </div>
+  </body>
+<html>

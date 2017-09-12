@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if ! test -e custom.css; then
+   cp custom.css.template custom.css
+   echo "Wrote custom.css"
+fi
+
+if ! test -e index.html; then
+   cp index.html.template index.html
+   echo "Wrote index.html"
+fi
+
