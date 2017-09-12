@@ -10,3 +10,7 @@ if ! test -e index.html; then
    echo "Wrote index.html"
 fi
 
+if ! test -e img; then
+   mkdir img
+   echo "Created empty directory img/"
+fi
