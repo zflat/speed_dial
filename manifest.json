@@ -4,7 +4,10 @@
   "name": "My Custom New Tab Page (Speed Dial)",
   "description": "This extension shows my custom start page when opening a new tab",
   "version": "1.0",
-
+  "icons": {
+    "16": "new_tab16.png",
+    "128": "new_tab128.png"
+  },
   "chrome_url_overrides" : {
     "newtab": "index.html"
   }
