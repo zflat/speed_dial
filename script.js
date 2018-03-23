@@ -24,18 +24,26 @@ var focusLink = function (ind) {
 document.addEventListener("keydown", function(e) {
   // Watch for the arrow key and then change the current element accordingly
   switch (e.keyCode) {
-    case 37: // left
-      focusLink(curr-1)
-      break;
-    case 38: // up
-      focusLink(curr-cols)
-      break;
-    case 39: // right
-      focusLink((curr === null) ? 0 : curr+1)
-      break;
-    case 40: //down
-      focusLink(curr+cols)
-      break;
+  case 37: // left -- decrement one place
+    focusLink(curr-1)
+    break;
+  case 38: // up -- stay within the current column
+    var first_row = curr < cols
+    var incomplete_col = curr % cols >= links.length % cols
+    var account_for_first_row = 0;
+    if(first_row) {
+      account_for_first_row = links.length % cols;
+      account_for_first_row *= incomplete_col ? -1 : 1
+    }
+    focusLink((curr-cols) + account_for_first_row)
+    break;
+  case 39: // right -- increment one place
+    focusLink((curr === null) ? 0 : curr+1)
+    break;
+  case 40: //down -- stay within the current column
+    var last_row = curr+cols >= links.length
+    focusLink(last_row ? curr % cols : curr+cols)
+    break;
   }
   if(e.shiftKey) {
     var link = link_codes[e.keyCode]
