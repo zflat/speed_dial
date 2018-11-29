@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>speed_dial editor</title>
+    <style>
+     body: { padding: 10px; }
+     form: {
+         width:600px;
+         height:200px;
+         border:1px solid #ccc;
+     }
+     #settings-importer {
+         display: none;
+     }
+    </style>
+  </head>
+  <body>
+    <form>
+      <label for="edit-style">
+        Custom Style
+      </label>
+      <br />
+      <textarea name="edit-style" cols="80" rows="10"></textarea>
+      <br />
+      <label for="edit-links">
+        Link content
+      </label>
+      <br />
+      <textarea name="edit-links" cols="80" rows="15" ></textarea>
+      <br />
+      <button id="btn-import" >Import</button>
+      <button id="btn-export" >Export</button>
+      <button id="btn-save" type="submit">Save</button>
+    </form>
+    <form id="settings-importer">
+      <br /><br />
+      <label for="file-import">
+        Import settings file:
+      </label>
+      <br />
+      <input id="file-import" name="file-import" type="file">
+      <button id="btn-clear-import" >Cancel</button>
+    </form>
+    <br /><br />
+    <label for="file-img">
+      Image encoder:
+    </label>
+    <br />
+    <input id="file-img" name="file-img" type="file">
+    <br />
+    <textarea name="file-encoded" id="file-encoded" cols="80" rows="3" ></textarea>
+    <script src="edit.js"></script>
+  </body>
+</html>
