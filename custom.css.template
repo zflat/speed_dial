@@ -1,7 +1,0 @@
-body {
-    background: url('img/')  no-repeat center center fixed;
-    background-size: cover;
-}
-.wrapper {
-    grid-template-columns: repeat(3, 200px);
-}

@@ -13,36 +13,43 @@ var updateCurrent = function () {
   return curr = 0
 }
 
-var focusLink = function (ind) {
+var focusLink = function (ind, e) {
+  if(e) {
+    e.preventDefault();
+  }
   ind = ind%links.length
   if(ind < 0) {
     ind = links.length + ind
   }
-  links[ind].focus()
+  if(links[ind]) {
+    links[ind].focus()
+  }
+  return links[ind];
 }
 
 document.addEventListener("keydown", function(e) {
   // Watch for the arrow key and then change the current element accordingly
   switch (e.keyCode) {
   case 37: // left -- decrement one place
-    focusLink(curr-1)
+    focusLink(curr-1, e)
     break;
   case 38: // up -- stay within the current column
     var first_row = curr < cols
-    var incomplete_col = curr % cols >= links.length % cols
+    var incomplete_col = curr < links.length % cols
     var account_for_first_row = 0;
     if(first_row) {
-      account_for_first_row = links.length % cols;
-      account_for_first_row *= incomplete_col ? -1 : 1
+      account_for_first_row = incomplete_col
+        ? (cols - (links.length % cols))
+        : -(links.length % cols);
     }
-    focusLink((curr-cols) + account_for_first_row)
+    focusLink((curr-cols) + account_for_first_row, e)
     break;
   case 39: // right -- increment one place
-    focusLink((curr === null) ? 0 : curr+1)
+    focusLink((curr === null) ? 0 : curr+1, e)
     break;
   case 40: //down -- stay within the current column
     var last_row = curr+cols >= links.length
-    focusLink(last_row ? curr % cols : curr+cols)
+    focusLink(last_row ? curr % cols : curr+cols, e)
     break;
   }
   if(e.shiftKey) {
@@ -81,33 +88,33 @@ var accessKeyLinks = function(links) {
   return codes
 }
 
-document.addEventListener('DOMContentLoaded', function(e) {
-  links = document.getElementsByTagName('a') // may need to be more specific if other links are added
-  link_codes = accessKeyLinks(links)
-
-  // Get the number of columns based on page render
+// Get the number of columns based on page render
+var setColsCount = function() {
   var wrapper = document.getElementsByClassName("wrapper")
   var style = wrapper.length ? getComputedStyle(wrapper[0]) : null
   cols = style ? style.gridTemplateColumns.split(' ').length : 1
-
-  // Initialize with the first link focused
+}
+var initContent = function() {
+  links = document.getElementsByTagName('a') // may need to be more specific if other links are added
+  link_codes = accessKeyLinks(links)
+  setColsCount();
   focusLink(updateCurrent())
+  // Initialize with the first link focused
+  // NOTE: suggest keyboard shortcut [Focus Page, Alt+F6]
+  focusLink(updateCurrent())
+}
+var onGridChanged = function (mutationsList, observer) {
+  for(let mutation of mutationsList) {
+    if (mutation.type === 'childList') {
+      initContent();
+    }
+  }
+}
+var gridObserver = new MutationObserver(onGridChanged);
+gridObserver.observe(document.getElementsByTagName('body')[0], {childList: true, subtree: true});
+
+document.addEventListener('DOMContentLoaded', function(e) {
+  initContent()
 })
 
-var drawFavicon = function() {
-  var iconEl = document.createElement('canvas')
-  iconEl.setAttribute("width", 16)
-  iconEl.setAttribute("height", 16)
-  iconEl.style.opacity = '0.5';
-  var hdc = iconEl.getContext('2d');
-  hdc.rect(iconEl.width*0.24, iconEl.height*0.24, iconEl.width*0.5,  iconEl.height*0.5)
-  var grd = hdc.createLinearGradient(0, 0, iconEl.width, iconEl.height)
-  grd.addColorStop(0, "#FFD19E")
-  grd.addColorStop(1, "#6D3328")
-  hdc.fillStyle = grd
-  hdc.fill()
-  document.getElementById("favicon-rel").setAttribute("href", iconEl.toDataURL('image/png'))
-}
-
-drawFavicon()
 

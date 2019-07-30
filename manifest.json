@@ -15,5 +15,8 @@
     "page": "edit.html",
     "open_in_tab": true,
     "chrome_style": true
-  }
+  },
+  "permissions": [
+    "storage"
+  ]
 }

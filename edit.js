@@ -1,3 +1,26 @@
+window.browser = (function () {
+  return window.msBrowser ||
+    window.browser ||
+    window.chrome;
+})();
+var getStorage = function () {
+  var sobj
+  try {
+    sobj = browser.storage
+  } catch (e) {
+    sobj = null
+  }
+  try {
+    if(!sobj) {
+      sobj = chrome.storage
+    }
+  } catch (e) {
+    sobj = null
+  }
+  return sobj
+}
+var storage = getStorage()
+
 var reader = new FileReader();
 reader.onload = function(e) {
     document.getElementById('file-encoded').value = reader.result;
@@ -12,28 +35,41 @@ var fileEncoderHandler = function(e) {
     }
 }
 
-var saveHandler = function(e) {
-    e.preventDefault()    
+var settingsChangeHandler = function (e) {
+  var str = e.target.value
+  // Check if it is valid JSON
+  var obj = null;
+  try {
+    obj = JSON.parse(str)
+  } catch (e) {
+    return;
+  }
+
+  // Save the settings
+  storage.local.set({
+    speed_dial_content: obj
+  });
 }
-var exportHandler = function(e) {
-    e.preventDefault()
+
+
+function onError (error) {
+  console.error(`Error: ${error}`);
 }
-var importerInitHandler = function(e) {
-    document.getElementById('settings-importer').style="display:block";
-    e.preventDefault()
+function onGotSettings (res) {
+  if(!res.speed_dial_content) {
+    return;
+  }
+  document.getElementById("edit-settings").value = JSON.stringify(res.speed_dial_content, null, 2)
 }
-var importClearHandler = function(e) {
-    document.getElementById('settings-importer').style="display:hidden";
-    e.preventDefault()
+function restoreContentSettings (e) {
+  var gettingItem = storage.local.get('speed_dial_content', onGotSettings);
+  if(gettingItem) {
+    gettingItem.then(onGotContent, onError);
+  }
 }
 
 document.addEventListener('DOMContentLoaded',function() {
-    document.getElementById("file-img").onchange=fileEncoderHandler;
-    document.getElementById("btn-save").onclick=saveHandler;
-    document.getElementById("btn-export").onclick=exportHandler;
-    document.getElementById("btn-import").onclick=importerInitHandler;
-    document.getElementById("btn-clear-import").onclick=importClearHandler;
+  restoreContentSettings()
+  document.getElementById("file-img").onchange=fileEncoderHandler;
+  document.getElementById("edit-settings").oninput=settingsChangeHandler;
 },false);
-
-// Trigger a download
-// window.location.href = "data:application/octet,"+encodeURIComponent("{'style':'','links':''}");
