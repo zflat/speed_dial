@@ -25,15 +25,19 @@ body {
     color: #333;
 }
 .box:hover, .box:nth-child(even):hover  {
-    border: 3px solid #393;
+    /* border: 3px solid #393; */
+    border-width: 3px;
+    border-sytle: solid;
     transition: all .1s ease-in;
 }
 .box:focus, .box:nth-child(even):focus  {
-    border: 3px solid #6C6;
+    /* border: 3px solid #6C6; */
+    border-width: 3px;
+    border-sytle: solid;
     transition: all .1s ease-in;
 }
 .box:hover span {
-    color: #363;
+    /* color: #363; */
     transition: all .1s ease-in;
 }
 .box.caption div img {

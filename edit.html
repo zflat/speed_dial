@@ -1,37 +1,340 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>speed_dial editor</title>
-    <style>
-     body: { padding: 10px; }
-     form: {
-         width:600px;
-         height:200px;
-         border:1px solid #ccc;
-     }
-     #settings-importer {
-         display: none;
-     }
-    </style>
-  </head>
-  <body>
-    <h1>Speed Dial Settings</h1>
-    <form>
-      <label for="edit-settings">
-        Settings
-      </label>
-      <br />
-      <textarea id="edit-settings" name="edit-settings" cols="80" rows="15" ></textarea>
-    </form>
-    <br /><br />
-    <label for="file-img">
-      Image encoder:
-    </label>
-    <br />
-    <input id="file-img" name="file-img" type="file">
-    <br />
-    <textarea name="file-encoded" id="file-encoded" cols="80" rows="3" ></textarea>
-    <script src="edit.js"></script>
-  </body>
+    <head>
+        <meta charset="utf-8">
+        <title>speed_dial editor</title>
+        <script type="text/javascript" src="edit.js"></script>
+        <style>
+         body {
+             padding: 10px;
+             font-family: Arial, Helvetica, sans-serif;
+             background-color: #ccc;
+             font-size: 1.0rem;
+         }
+         #settings-importer {
+             display: none;
+         }
+         div.target {
+             padding: 0px;
+             border: 1px solid #000;
+             border-width: 1px 2px 1px 2px;
+         }
+         div.target.first {
+             border-top-width: 2px;
+         }
+         div.target.last {
+             border-bottom-width: 2px;
+         }
+         div.target:hover {
+             /* background-color: #eee; */
+         }
+         .remove {
+             display: none;
+         }
+         .blank {
+             visibility: hidden;
+         }
+         .m-fadeOut {
+             visibility: hidden;
+             opacity: 0;
+             transition: visibility 0s linear 300ms, opacity 300ms;
+         }
+         .m-fadeIn {
+             visibility: visible;
+             opacity: 1;
+             transition: visibility 0s linear 0s, opacity 300ms;
+         }
+         #form__general_settings {
+             padding: 10px 0px;
+             border: 2px solid #000;
+             background-color: #fff;
+             /* border-top-width: 0; */
+         }
+         .form__general label.form__general__row {
+             display: block;
+             margin: 5px 0px;
+             padding: 5px;
+         }
+         .form__general label.form__general__row .form__general__prompt {
+             text-align: right;
+             width: 200px;
+             display: inline-block;
+             padding: 0.7rem;
+             padding-right: 10px;
+         }
+         .form__general .input__txt {
+             height: 1.8rem;
+             border: 1px solid #333;
+             border-radius: 2px;
+             padding-left: 2px;
+             width: 300px;
+         }
+         .form__general .input__clr {
+             background: #fff;
+             border: 1px solid #333;
+             border-radius: 2px;
+         }
+         .form__general input[type=number] {
+             width: 50px;
+         }
+         .form__general__control {
+             padding-top: 10px;
+             padding-left: 230px;
+         }
+
+         .form__tile {
+             padding: 10px;
+         }
+         .form__tile label.form__tile__row {
+             display: block;
+             margin: 5px 0px;
+             padding: 5px;
+         }
+         .form__tile label.form__tile__row .form__tile__prompt {
+             text-align: right;
+             width: 150px;
+             display: inline-block;
+             padding-right: 10px;
+         }
+         .form__tile .input__txt, .form__tile .input__select {
+             height: 1.8rem;
+             border: 1px solid #333;
+             border-radius: 2px;
+         }
+         .form__tile .input__txt {
+             padding-left: 2px;
+             width: 300px;
+         }
+         #txtUrl {
+             width: 70%;
+             max-width: 800px;
+         }
+         .form__tile .input__select {
+             background: #fff;
+         }
+         .form__tile input[type=number] {
+             width: 50px;
+         }
+         button {
+             height: 2rem;
+             background: #fff;
+             border: 2px solid #333;
+             border-radius: 2px;
+             font-weight: 700;
+         }
+         button:hover {
+             background: #eee;
+         }
+
+         .heading-count-closed, .heading-count-open {
+             font-weight: 700;
+             padding-right: 10px;
+         }
+         .heading-count-closed::after {
+             font-weight: 500;
+             padding-left: 5px;
+             content: "▶";
+         }
+         .heading-count-open::after {
+             font-weight: 500;
+             padding-left: 5px;
+             content: "▶";
+             transform: rotate(90deg) translate(-1px, -2px);
+             display: inline-block;
+         }
+         .heading-area,.heading-area-open {
+             padding: 10px;
+             border-bottom: 2px solid transparent;
+
+             text-overflow: ellipsis;
+             white-space: nowrap;
+             overflow: hidden;
+         }
+         .heading-area,.heading-area-open {
+
+         }
+         .heading-area:hover {
+             background-color: #eee;
+             /* border-bottom: 1px solid #000; */
+         }
+         .heading-area-open:hover {
+             background-color: #efefef;
+             border-bottom: 2px double #999;
+         }
+         .tile_move {
+             float: right;
+         }
+         .tile_save {
+             padding-left: 165px;
+         }
+
+         div.target.first  #btnMoveUp{
+             visibility: hidden;
+         }
+         div.target.last #btnMoveDown{
+             visibility: hidden;
+         }
+         .layout_wrapper {
+             max-width: 1064px;
+             margin: auto;
+         }
+         h1 {
+             color: #6853d5;
+             border-bottom: 5px solid #999;
+             font-size: 2rem;
+         }
+         button.primary {
+             background: #6853d5;
+             color: #fff;
+         }
+         .form_wrapper h2 {
+             background: #999;
+             color: #fff;
+             border-top: 5px solid #6853d5;
+             font-size: 1.5rem;
+         }
+         button.primary:hover {
+             background: #6853d5;
+             color: #ccf;
+         }
+         .form_wrapper {
+             margin-top: 25px;
+             padding-top: 0px;
+         }
+         .form_wrapper h2 {
+             padding: 5px;
+             margin: 0;
+         }
+         #tiles_wrapper {
+             background: #fff;
+         }
+         h2 {
+             border: 2px solid #000;
+             border-bottom-width: 0px;
+         }
+
+         #btnFileImgBg, #btnFileImg {
+             margin-left: 10px;
+         }
+
+        </style>
+    </head>
+    <body>
+        <div class="layout_wrapper">
+            <h1>Speed Dial Settings</h1>
+            <button type="button" id="btnExport" class="primary">Export Settings</button>
+            <button type="button" id="btnImport" class="primary">Import Settings</button>
+            <a download="settings.json" id="aDownload" class="remove"></a>
+            <input type="file" id="fileSettings" class="remove" />
+            <div class="form_wrapper">
+                <h2 class="header__options">Page options</h2>
+                <form id="form__general_settings" class="form__general" autocomplete="off">
+                    <label class="form__general__row">
+                        <span class="form__general__prompt">Number of columns:</span>
+                        <input type="number" id="txtNCols" class="input__txt" />
+                    </label>
+                    <label class="form__general__row">
+                        <span class="form__general__prompt">Column width:</span>
+                        <input type="number" id="txtColWidth" class="input__txt" />&nbsp;px
+                    </label>
+                    <label class="form__general__row">
+                        <span class="form__general__prompt">Link highlight color:</span>
+                        <input type="color" id="txtColorHover" class="input__clr" />
+                    </label>
+                    <label class="form__general__row">
+                        <span class="form__general__prompt">Page accent color primary:</span>
+                        <input type="color" id="txtColor1" class="input__clr" />
+                    </label>
+                    <label class="form__general__row">
+                        <span class="form__general__prompt">Page accent color secondary:</span>
+                        <input type="color" id="txtColor2" class="input__clr" />
+                    </label>
+                    <label class="form__general__row">
+                        <span class="form__general__prompt">Page background image:</span>
+                        <input id="txtImgBgUrl" type="text" class="input__txt" />
+                        <input type="radio" name="imgType" id="imgBgTypeUrl" value="url" checked="checked">
+                        <label for="imgBgTypeUrl">URL</label>
+                        <input type="radio" name="imgType" id="imgBgTypeUpload" value="file">
+                        <label for="imgBgTypeUpload">File</label>
+                        <span id="spnImgName"></span>
+                        <input id="fileImgBg" type="file" class="remove" />
+                        <button type="button" class="" id="btnFileImgBg" class="blank">Choose file</button>
+                        <input type="hidden" id="fileImgBgVal" />
+                        <input type="hidden" id="inputImgBgVal" />
+                    </label>
+                    <div class="form__general__control">
+                        <button type="submit" id="btnSaveGeneral" class="primary">Save options</button>
+                        <span id="uiOptionsSaved" class="blank">&#10003;</span>
+                    </div>
+                </form>
+            </div>
+            <div class="form_wrapper">
+                <h2 class="header__tiles">Links</h2>
+                <div id="tiles_wrapper"></div>
+                <div id="tile_form_parking" class="remove">
+                    <form id="tile_form" class="form__tile" autocomplete="off">
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Text:</span>
+                            <input type="text" id="txtText" placeholder="Text" class="input__txt" />
+                        </label>
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Type:</span>
+                            <select id="selType" class="input__select">
+                                <option value="caption">Caption</option>
+                                <option value="pill">Pill</option>
+                                <option value="logo">Logo</option>
+                                <option value="text">Text</option>
+                            </select>
+                        </label>
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Link URL:</span>
+                            <input type="text" id="txtUrl" placeholder="https://example.test/uri" class="input__txt" />
+                        </label>
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Image:</span>
+                            <input id="txtImgUrl" type="text" class="input__txt" />
+                            <input type="radio" name="imgType" id="imgTypeUrl" value="url">
+                            <label for="imgTypeUrl">URL</label>
+                            <input type="radio" name="imgType" id="imgTypeUpload" value="file">
+                            <label for="imgTypeUpload">File</label>
+                            <span id="spnImgName"></span>
+                            <input id="fileImg" type="file" class="remove" />
+                            <button type="button" id="btnFileImg" class="blank">Choose file</button>
+                            <input type="hidden" id="fileImgVal" />
+                            <input type="hidden" id="inputImgVal" />
+                        </label>
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Image width:</span>
+                            <input type="number" id="txtImgWidth" placeholder="90" class="input__txt" />%
+                        </label>
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Image inline style:</span>
+                            <input type="text" id="txtImgStyle" placeholder="background-color: #000" class="input__txt" />
+                        </label>
+                        <label class="form__tile__row">
+                            <span class="form__tile__prompt">Access Key:</span>
+                            <select id="selAccessKey" class="input__select"></select>
+                        </label>
+                        <br />
+                        <span class="tile_save">
+                            <button type="submit" id="btnSaveTile" class="primary">Save</button>
+                            <span id="uiTileSaved" class="blank">&#10003;</span>
+                            <button type="button" id="btnCancelTile">Cancel</button>
+                        </span>
+                        <span class="tile_move">
+                            <button type="button" id="btnMoveUp">⬆ Move Up</button>
+                            <button type="button" id="btnMoveDown">⬇ Move Down</button>
+                            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                            <button type="button" id="btnRemovelTile">&times; Remove</button>
+                        </span>
+                    </form>
+                </div>
+                <br /><br />
+                <div>
+                    <button type="button" id="btnAddTile" class="primary"> Add Link + </button>
+                </div>
+            </div>
+            <!-- <a href="util.html">Utilities</a> -->
+        </div>
+    </body>
 </html>

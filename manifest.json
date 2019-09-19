@@ -13,10 +13,15 @@
   },
   "options_ui": {
     "page": "edit.html",
-    "open_in_tab": true,
-    "chrome_style": true
+    "open_in_tab": true
   },
   "permissions": [
     "storage"
-  ]
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
 }

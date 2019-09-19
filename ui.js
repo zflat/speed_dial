@@ -1,3 +1,5 @@
+'use strict';
+
 var cols  = null  // Number of grid columns
 var links = null  // List of links on the page
 var curr  = null  // Index of focused element in list of links

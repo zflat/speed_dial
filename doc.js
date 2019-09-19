@@ -1,26 +1,29 @@
+'use strict';
+
 window.browser = (function () {
   return window.msBrowser ||
     window.browser ||
     window.chrome;
 })();
 
-var getStorage = function () {
-  var sobj
+var getSystem = function (system) {
+  var robj;
   try {
-    sobj = browser.storage
+    robj = browser[system]
   } catch (e) {
-    sobj = null
+    robj = null
   }
   try {
-    if(!sobj) {
-      sobj = chrome.storage
+    if(!robj) {
+      robj = chrome[system]
     }
   } catch (e) {
-    sobj = null
+    robj = null
   }
-  return sobj
+  return robj;
 }
-var storage = getStorage()
+
+var storage = getSystem('storage')
 
 var createTargetImage = function(settings) {
   var tImg  = document.createElement('img');
@@ -29,7 +32,7 @@ var createTargetImage = function(settings) {
     tImg.setAttribute('style', settings.style);
   }
   if(settings.width) {
-    tImg.setAttribute('width', settings.width);
+    tImg.setAttribute('width', settings.width + '%');
   }
   return tImg;
 }
@@ -119,6 +122,13 @@ var createTargets = function (settings) {
   for(var i=0; i<settings.targets.length; i++) {
     targets.push(createTarget(settings.targets[i]));
   }
+  targets.push(createTarget({
+    text: "Options",
+    type: "text",
+    link: {
+      href: "edit.html"
+    },
+  }));
   return targets;
 }
 
@@ -133,21 +143,41 @@ function onGotContent (res) {
 
   var settings = res.speed_dial_content;
   var elBody = document.getElementsByTagName('body')[0];
-  if(settings.page && settings.page.style) {
-    elBody.setAttribute('style', settings.page.style);
+  // if(settings.page && settings.page.style) {
+  //   elBody.setAttribute('style', settings.page.style);
+  // }
+  if(settings.page && settings.page.bg_href) {
+    document.styleSheets[0].insertRule(
+      "body {background: url('"
+        + settings.page.bg_href
+        + "') no-repeat center center fixed; background-size: cover;}",
+      0
+    );
   }
 
-  if(settings.page.accent_primary && settings.page.accent_secondary) {
+  if(settings.page && settings.page.accent_primary && settings.page.accent_secondary) {
     drawFavicon(
       settings.page.accent_primary,
       settings.page.accent_secondary
-    )
+    );
+    document.styleSheets[0].insertRule(
+      ".box:hover, .box:nth-child(even):hover {border-color: " + settings.page.hover_color + ";}",
+      document.styleSheets[0].length-1
+    );
+    document.styleSheets[0].insertRule(
+      ".box:hover span {color: " + settings.page.accent_secondary + ";}",
+      document.styleSheets[0].length-1
+    );
+    document.styleSheets[0].insertRule(
+      ".box:focus, .box:nth-child(even):focus {border-color: " + settings.page.accent_primary + ";}",
+      document.styleSheets[0].length-1
+    );
   }
 
   var t = createTargets(settings);
   var wrapper = document.createElement('div');
   wrapper.setAttribute('class', 'wrapper');
-  wrapper.setAttribute('style', 'grid-template-columns: repeat('+settings.cols.count+','+settings.cols.width+')');
+  wrapper.setAttribute('style', 'grid-template-columns: repeat('+settings.cols.count+','+settings.cols.width+'px)');
   for(var i=0; i<t.length; i++) {
     wrapper.appendChild(t[i]);
   }
@@ -175,7 +205,30 @@ var drawFavicon = function(primary, secondary) {
   document.getElementById("favicon-rel").setAttribute("href", iconEl.toDataURL('image/png'))
 }
 
-
 document.addEventListener('DOMContentLoaded', function(e) {
   restoreContentSettings();
 })
+
+document.body.addEventListener('click', evt => {
+  // Allow local file links
+  // See https://github.com/tksugimoto/chrome-extension_open-local-file-link/blob/master/chrome-extension/background.js
+  if (!evt.isTrusted) return;
+  var target = evt.target;
+  while (target && target.tagName !== 'A') {
+    target = target.parentNode;
+  }
+  if (target) {
+    var url = target.href;
+    if (url.startsWith('file://')) {
+      evt.preventDefault();
+      try {
+	getSystem('runtime').sendMessage({
+	  method: 'openLocalFile',
+	  localFileUrl: url,
+	});
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
+});
