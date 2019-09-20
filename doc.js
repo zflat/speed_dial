@@ -122,13 +122,6 @@ var createTargets = function (settings) {
   for(var i=0; i<settings.targets.length; i++) {
     targets.push(createTarget(settings.targets[i]));
   }
-  targets.push(createTarget({
-    text: "Options",
-    type: "text",
-    link: {
-      href: "edit.html"
-    },
-  }));
   return targets;
 }
 
@@ -174,14 +167,28 @@ function onGotContent (res) {
     );
   }
 
-  var t = createTargets(settings);
-  var wrapper = document.createElement('div');
-  wrapper.setAttribute('class', 'wrapper');
-  wrapper.setAttribute('style', 'grid-template-columns: repeat('+settings.cols.count+','+settings.cols.width+'px)');
-  for(var i=0; i<t.length; i++) {
-    wrapper.appendChild(t[i]);
+  if(settings.targets && settings.targets.length) {
+    var t = createTargets(settings);
+    var wrapper = document.createElement('div');
+    wrapper.setAttribute('class', 'wrapper');
+    wrapper.setAttribute('style', 'grid-template-columns: repeat('+settings.cols.count+','+settings.cols.width+'px)');
+    for(var i=0; i<t.length; i++) {
+      wrapper.appendChild(t[i]);
+    }
+    elBody.appendChild(wrapper);
+
+    // Add a small menu for the edit settings page
+    var menu = document.createElement('div');
+    menu.setAttribute('id', 'settings_menu');
+    menu.innerHTML = '<a href="edit.html">&lt;settings /&gt;</a>';
+    elBody.appendChild(menu);
+  } else {
+    // Show the empty state content
+    var emptyStatte = document.createElement('div');
+    emptyStatte.setAttribute('id', 'empty_state');
+    emptyStatte.innerHTML = '<p>You do not have any links. Add links and edit other options on the <a href="edit.html">settings page</a>.</p>';
+    elBody.appendChild(emptyStatte);
   }
-  elBody.appendChild(wrapper);
 }
 function restoreContentSettings (e) {
   var gettingItem = storage.local.get('speed_dial_content', onGotContent);

@@ -56,3 +56,39 @@ body {
     grid-row-gap: 10px;
     grid-gap: 10px;
 }
+#settings_menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    background-color: #333;
+    border-radius: 0 0 5px 0;
+}
+#settings_menu a {
+    font-size: 1em;
+    padding: 5px;
+    color: #aaa;
+    text-decoration: none;
+}
+#settings_menu a:visited {
+    color: #aaa;
+}
+#settings_menu a:hover {
+    color: #fff;
+}
+#empty_state {
+    background-color: #eee;
+    border: 1px solid #333;
+    border-radius: 10px;
+    margin: auto;
+    padding: 20px;
+    font-size: 1.25em;
+    font-weight: 100;
+}
+#empty_state a {
+    color: #33A;
+    font-weight: 900;
+}
+#empty_state a:hover {
+    color: #00A;
+}
