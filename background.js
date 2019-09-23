@@ -26,7 +26,8 @@ getSystem('runtime').onMessage.addListener((message, sender) => {
 });
 
 const openLocalFile = (localFileUrl, baseTab) => {
-  getSystem('tabs').create({
+  var tabs = getSystem('tabs');
+  tabs.create({
     url: localFileUrl,
     index: baseTab.index + 1,
   });

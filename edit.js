@@ -229,7 +229,7 @@ var formHandlers = {
 
     settingsHandlers.save(settings);
     document.getElementById('uiOptionsSaved').setAttribute('class', 'm-fadeIn');
-    setTimeout(function() {
+    window.setTimeout(function() {
       document.getElementById('uiOptionsSaved').setAttribute('class', 'm-fadeOut');
     }, 2000);
   },
@@ -299,7 +299,7 @@ var formHandlers = {
     var settings = formHandlers.populateSettings(currIndex, JSON.parse(settingsStr));
     settingsHandlers.save(settings);
     document.getElementById('uiTileSaved').setAttribute('class', 'm-fadeIn');
-    setTimeout(function() {
+    window.setTimeout(function() {
       document.getElementById('uiTileSaved').setAttribute('class', 'm-fadeOut');
     }, 2000);
     return true;
@@ -310,7 +310,7 @@ var formHandlers = {
     }
   },
   imgWillFileEncode: function (elVal, elName) {
-    var reader = new FileReader();
+    var reader = new window.FileReader();
     reader.onload = formHandlers._imgWillOnload(elVal, reader);
     return function(e) {
       var files = e.target.files;
@@ -505,11 +505,14 @@ var redrawTiles = function(settings) {
   while (elWrapper.firstChild) {
     elWrapper.removeChild(elWrapper.firstChild);
   }
+  document.getElementById("subheader__links")
+    .setAttribute('class', (settings.targets.length) ? '' : 'remove' );
   for(var i=0; i<settings.targets.length; i++) {
     var t = createTile(settings.targets[i], i);
     if(i === 0) {
       t.setAttribute('class', t.getAttribute('class') +' first');
-    } else if(i === settings.targets.length-1) {
+    }
+    if(i === settings.targets.length-1) {
       t.setAttribute('class', t.getAttribute('class') +' last');
     }
     var elHeading = t.querySelector("[data-heading]").parentNode;

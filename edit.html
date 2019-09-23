@@ -226,7 +226,7 @@
             <button type="button" id="btnImport" class="primary">Import Settings</button>
             <a download="settings.json" id="aDownload" class="remove"></a>
             <input type="file" id="fileSettings" class="remove" />
-            <div class="form_wrapper">
+            <div class="form_wrapper" id="wrapper__options">
                 <h2 class="header__options">Page options</h2>
                 <form id="form__general_settings" class="form__general" autocomplete="off">
                     <label class="form__general__row">
@@ -268,8 +268,8 @@
                     </div>
                 </form>
             </div>
-            <div class="form_wrapper">
-                <h2 class="header__tiles">Links</h2>
+            <div class="form_wrapper" id="wrapper__links">
+                <h2 class="header__tiles" id="subheader__links">Links</h2>
                 <div id="tiles_wrapper"></div>
                 <div id="tile_form_parking" class="remove">
                     <form id="tile_form" class="form__tile" autocomplete="off">
@@ -334,7 +334,6 @@
                     <button type="button" id="btnAddTile" class="primary"> Add Link + </button>
                 </div>
             </div>
-            <!-- <a href="util.html">Utilities</a> -->
         </div>
     </body>
 </html>
