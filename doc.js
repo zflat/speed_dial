@@ -130,12 +130,13 @@ function onError (error) {
   console.error(`Error: ${error}`);
 }
 function onGotContent (res) {
+  var elBody = document.getElementsByTagName('body')[0];
   if(!res.speed_dial_content) {
+    showEmptyState(elBody);
     return;
   }
 
   var settings = res.speed_dial_content;
-  var elBody = document.getElementsByTagName('body')[0];
   // if(settings.page && settings.page.style) {
   //   elBody.setAttribute('style', settings.page.style);
   // }
@@ -184,10 +185,7 @@ function onGotContent (res) {
     elBody.appendChild(menu);
   } else {
     // Show the empty state content
-    var emptyStatte = document.createElement('div');
-    emptyStatte.setAttribute('id', 'empty_state');
-    emptyStatte.innerHTML = '<p>You do not have any links. Add links and edit other options on the <a href="edit.html">settings page</a>.</p>';
-    elBody.appendChild(emptyStatte);
+    showEmptyState(elBody);
   }
 }
 function restoreContentSettings (e) {
@@ -195,6 +193,18 @@ function restoreContentSettings (e) {
   if(gettingItem) {
     gettingItem.then(onGotContent, onError);
   }
+}
+
+// Show the empty state content
+var showEmptyState = function(elBody) {
+  if(document.getElementById('empty_state')) {
+    // Already showing
+    return;
+  }
+  var emptyStatte = document.createElement('div');
+  emptyStatte.setAttribute('id', 'empty_state');
+  emptyStatte.innerHTML = '<p>You do not have any links. Add links and edit other options on the <a href="edit.html">settings page</a>.</p>';
+  elBody.appendChild(emptyStatte);
 }
 
 var drawFavicon = function(primary, secondary) {

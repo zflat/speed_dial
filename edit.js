@@ -438,6 +438,21 @@ var settingsHandlers = {
     }
     return available;
   },
+  clearSettings: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var settingItem = storage.local.remove(
+      'speed_dial_content',
+      restoreContentSettings
+    );
+    if(settingItem) {
+      settingItem.then(restoreContentSettings, onError);
+    }
+    document.getElementById('uiOptionsAltered').setAttribute('class', 'm-fadeIn');
+    window.setTimeout(function() {
+      document.getElementById('uiOptionsAltered').setAttribute('class', 'm-fadeOut');
+    }, 2000);
+  },
   downloadSettings: function(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -476,9 +491,14 @@ var settingsHandlers = {
       e.stopPropagation();
       var files = e.target.files;
       var file = files[0];
-      if(file) {
-        reader.readAsText(file);
+      if(!file) {
+        return
       }
+      reader.readAsText(file);
+      document.getElementById('uiOptionsAltered').setAttribute('class', 'm-fadeIn');
+      window.setTimeout(function() {
+        document.getElementById('uiOptionsAltered').setAttribute('class', 'm-fadeOut');
+      }, 2000);
     }
   },
   save: function(settings) {
@@ -498,6 +518,7 @@ var redrawTiles = function(settings) {
       .getElementById('tile_form')
       .getAttribute('data-current-index');
   var elTile = null;
+  var targets = settings.targets || [];
 
   formHandlers.hideForm();
   var elWrapper = document.getElementById("tiles_wrapper");
@@ -506,13 +527,13 @@ var redrawTiles = function(settings) {
     elWrapper.removeChild(elWrapper.firstChild);
   }
   document.getElementById("subheader__links")
-    .setAttribute('class', (settings.targets.length) ? '' : 'remove' );
-  for(var i=0; i<settings.targets.length; i++) {
-    var t = createTile(settings.targets[i], i);
+    .setAttribute('class', (targets.length) ? '' : 'remove' );
+  for(var i=0; i<targets.length; i++) {
+    var t = createTile(targets[i], i);
     if(i === 0) {
       t.setAttribute('class', t.getAttribute('class') +' first');
     }
-    if(i === settings.targets.length-1) {
+    if(i === targets.length-1) {
       t.setAttribute('class', t.getAttribute('class') +' last');
     }
     var elHeading = t.querySelector("[data-heading]").parentNode;
@@ -536,6 +557,7 @@ function onError (error) {
 }
 function onGotSettings (res) {
   if(!res.speed_dial_content) {
+    redrawTiles({});
     return;
   }
   window.localStorage.setItem('settings', JSON.stringify(res.speed_dial_content));
@@ -565,6 +587,7 @@ document.addEventListener('DOMContentLoaded',function() {
   )
   document.getElementById("btnExport").onclick = settingsHandlers.downloadSettings;
   document.getElementById("btnImport").onclick = settingsHandlers.uploadSettings;
+  document.getElementById("btnClear").onclick = settingsHandlers.clearSettings;
   document.getElementById("fileSettings").onchange = settingsHandlers.willImportSettings();
   document.getElementById("fileImgBg").onchange = formHandlers.imgWillFileEncode(
     document.getElementById("fileImgBgVal"),
