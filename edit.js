@@ -193,14 +193,16 @@ var formHandlers = {
   },
   populateOptionsForm: function(settings) {
     var elForm = document.getElementById('form__general_settings')
-    document.getElementById('txtNCols').value = settings.cols.count;
-    document.getElementById('txtColWidth').value = settings.cols.width;
-    document.getElementById('txtColor1').value = settings.page.accent_primary;
-    document.getElementById('txtColor2').value = settings.page.accent_secondary;
-    document.getElementById('txtColorHover').value = settings.page.hover_color;
+    var cols = settings.cols || {};
+    var page = settings.page || {};
+    document.getElementById('txtNCols').value = cols.count || '';
+    document.getElementById('txtColWidth').value = cols.width || '';
+    document.getElementById('txtColor1').value = page.accent_primary || '#000000';
+    document.getElementById('txtColor2').value = page.accent_secondary || '#000000';
+    document.getElementById('txtColorHover').value = page.hover_color || '#000000';
     formHandlers.updateImg({
-      src: settings.page.bg_href || '',
-      name: settings.page.bg_name || '',
+      src: page.bg_href || '',
+      name: page.bg_name || '',
     }, formHandlers.bgImgElems());
     // settings.page.style
   },
@@ -210,11 +212,16 @@ var formHandlers = {
     var elForm = document.getElementById('form__general_settings')
     var settingsStr = window.localStorage.getItem('settings') || "{}";
     var settings = JSON.parse(settingsStr);
-    settings.cols.count = document.getElementById('txtNCols').value;
-    settings.cols.width = document.getElementById('txtColWidth').value;
-    settings.page.accent_primary = document.getElementById('txtColor1').value;
-    settings.page.accent_secondary = document.getElementById('txtColor2').value;
-    settings.page.hover_color = document.getElementById('txtColorHover').value;
+    settings.cols = {
+      count: document.getElementById('txtNCols').value,
+      width: document.getElementById('txtColWidth').value,
+    };
+    settings.page = {
+      accent_primary: document.getElementById('txtColor1').value,
+      accent_secondary: document.getElementById('txtColor2').value,
+      hover_color: document.getElementById('txtColorHover').value,
+    };
+
     if(document.getElementById('imgBgTypeUpload').checked) {
       var clearedImg = !document.getElementById('txtImgBgUrl').value;
       var choseImg = !!document.getElementById('fileImgBgVal').value;
@@ -238,6 +245,9 @@ var formHandlers = {
     e.stopPropagation();
     var settingsStr = window.localStorage.getItem('settings') || "{}";
     var settings = JSON.parse(settingsStr);
+    if(!settings.targets) {
+      settings.targets = []
+    }
     settings.targets.push({
       text: '',
       link: {
@@ -252,7 +262,7 @@ var formHandlers = {
       },
       type: 'caption',
     });
-      document
+    document
       .getElementById('tile_form')
       .setAttribute('data-current-index', settings.targets.length-1);
     settingsHandlers.save(settings);
@@ -441,6 +451,7 @@ var settingsHandlers = {
   clearSettings: function(e) {
     e.preventDefault();
     e.stopPropagation();
+    window.localStorage.removeItem('settings');
     var settingItem = storage.local.remove(
       'speed_dial_content',
       restoreContentSettings
@@ -558,6 +569,7 @@ function onError (error) {
 function onGotSettings (res) {
   if(!res.speed_dial_content) {
     redrawTiles({});
+    formHandlers.populateOptionsForm({});
     return;
   }
   window.localStorage.setItem('settings', JSON.stringify(res.speed_dial_content));

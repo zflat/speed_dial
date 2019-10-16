@@ -172,7 +172,11 @@ function onGotContent (res) {
     var t = createTargets(settings);
     var wrapper = document.createElement('div');
     wrapper.setAttribute('class', 'wrapper');
-    wrapper.setAttribute('style', 'grid-template-columns: repeat('+settings.cols.count+','+settings.cols.width+'px)');
+    var repeatCount = settings.cols.count || 1;
+    var repeatWidth = settings.cols.width
+        ? settings.cols.width + 'px'
+        : '[col-start] 1fr [col-end]';
+    wrapper.setAttribute('style', 'grid-template-columns: repeat('+repeatCount+','+repeatWidth+')');
     for(var i=0; i<t.length; i++) {
       wrapper.appendChild(t[i]);
     }
