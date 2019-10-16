@@ -220,6 +220,8 @@ var formHandlers = {
       accent_primary: document.getElementById('txtColor1').value,
       accent_secondary: document.getElementById('txtColor2').value,
       hover_color: document.getElementById('txtColorHover').value,
+      bg_href: settings.page ? settings.page.bg_href : null,
+      bg_name: settings.page ? settings.page.bg_name : null,
     };
 
     if(document.getElementById('imgBgTypeUpload').checked) {
